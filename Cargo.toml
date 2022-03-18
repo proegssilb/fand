@@ -1,6 +1,6 @@
 [package]
 name = "fand"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Philip Rebohle <philip.rebohle@tu-dortmund.de>", "proegssilb <proegssilb@gmail.com"]
 edition = "2021"
 

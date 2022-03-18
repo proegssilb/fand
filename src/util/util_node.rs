@@ -30,7 +30,6 @@ pub fn get_node<'a>(tag_name: &str, nodes: &'a [Node], id: usize) -> Result<&'a 
         .get(id)
         .ok_or(format!("({}): Missing node argument", tag_name))
 }
-
 lazy_static! {
     pub static ref HWMON_NAME_TO_PATH: HashMap<String, String> = {
         let mut hwmon_table = HashMap::new();

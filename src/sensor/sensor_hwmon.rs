@@ -1,10 +1,10 @@
-use parser::{Evaluator, Node};
+use crate::parser::{Evaluator, Node};
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
-use sensor::Sensor;
-use util;
+use crate::sensor::Sensor;
+use crate::util;
 
 // Hwmon sensor
 //

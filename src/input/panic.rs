@@ -1,8 +1,8 @@
-use input::Input;
+use crate::input::Input;
 
-use input::evaluator::InputEvaluatorRef;
-use parser::{Evaluator, Node};
-use util;
+use crate::input::evaluator::InputEvaluatorRef;
+use crate::parser::{Evaluator, Node};
+use crate::util;
 
 // Panic
 //
@@ -17,11 +17,7 @@ pub struct Panic {
 }
 
 impl Panic {
-    pub fn create(
-        temp_target_v: f64,
-        temp_critical_v: f64,
-        input_v: Box<dyn Input>,
-    ) -> Box<dyn Input> {
+    pub fn create(temp_target_v: f64, temp_critical_v: f64, input_v: Box<dyn Input>) -> Box<dyn Input> {
         Box::new(Panic {
             input: input_v,
             temp_target: temp_target_v,

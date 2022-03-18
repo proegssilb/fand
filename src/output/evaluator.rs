@@ -1,11 +1,11 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use fan::evaluator::NamedFans;
-use input::evaluator::InputEvaluator;
-use output::Output;
-use parser::{Evaluator, Node};
-use util;
+use crate::fan::evaluator::NamedFans;
+use crate::input::evaluator::InputEvaluator;
+use crate::output::Output;
+use crate::parser::{Evaluator, Node};
+use crate::util;
 
 // Output evaluator
 pub struct OutputEvaluator {

@@ -2,10 +2,10 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use parser::{Evaluator, Node, TagEvaluator};
-use sensor::sensor_hwmon::EvalHwmonSensor;
-use sensor::Sensor;
-use util;
+use crate::parser::{Evaluator, Node, TagEvaluator};
+use crate::sensor::sensor_hwmon::EvalHwmonSensor;
+use crate::sensor::Sensor;
+use crate::util;
 
 pub type NamedSensors = HashMap<String, Rc<RefCell<Box<dyn Sensor>>>>;
 
@@ -29,10 +29,7 @@ impl SensorEvaluator {
 }
 
 impl Evaluator<(String, Rc<RefCell<Box<dyn Sensor>>>)> for SensorEvaluator {
-    fn parse_nodes(
-        &self,
-        nodes: &[Node],
-    ) -> Result<(String, Rc<RefCell<Box<dyn Sensor>>>), String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<(String, Rc<RefCell<Box<dyn Sensor>>>), String> {
         let name = util::get_text_node("sensor", nodes, 0)?;
         let node = util::get_node("sensor", nodes, 1)?;
         Ok((name.clone(), self.tag_evaluator.parse_node(node)?))

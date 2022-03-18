@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use fan::fan_console::EvalConsoleFan;
-use fan::fan_hwmon_pwm::EvalHwmonPwmFan;
-use fan::Fan;
-use parser::{Evaluator, Node, TagEvaluator};
-use util;
+use crate::fan::fan_console::EvalConsoleFan;
+use crate::fan::fan_hwmon_pwm::EvalHwmonPwmFan;
+use crate::fan::Fan;
+use crate::parser::{Evaluator, Node, TagEvaluator};
+use crate::util;
 
 pub type NamedFans = HashMap<String, Box<dyn Fan>>;
 

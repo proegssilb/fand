@@ -1,8 +1,8 @@
-use parser::{Evaluator, Node};
+use crate::parser::{Evaluator, Node};
 use std::io::{self, Write};
 
-use fan::Fan;
-use util;
+use crate::fan::Fan;
+use crate::util;
 
 // Fan speed output on console
 //

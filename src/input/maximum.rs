@@ -1,7 +1,7 @@
-use input::Input;
+use crate::input::Input;
 
-use input::evaluator::InputEvaluatorRef;
-use parser::{Evaluator, Node};
+use crate::input::evaluator::InputEvaluatorRef;
+use crate::parser::{Evaluator, Node};
 
 // Maximum accumulator
 //

@@ -1,12 +1,12 @@
-use output::OutputCollection;
-use sensor::SensorCollection;
+use crate::output::OutputCollection;
+use crate::sensor::SensorCollection;
 
-use fan::evaluator::{FanEvaluator, NamedFans};
-use input::evaluator::InputEvaluator;
-use output::evaluator::OutputEvaluator;
-use sensor::evaluator::{NamedSensors, SensorEvaluator};
+use crate::fan::evaluator::{FanEvaluator, NamedFans};
+use crate::input::evaluator::InputEvaluator;
+use crate::output::evaluator::OutputEvaluator;
+use crate::sensor::evaluator::{NamedSensors, SensorEvaluator};
 
-use parser::{Evaluator, Node};
+use crate::parser::{Evaluator, Node};
 
 use std::cell::RefCell;
 use std::rc::Rc;

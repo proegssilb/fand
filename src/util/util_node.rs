@@ -1,4 +1,4 @@
-use parser::Node;
+use crate::parser::Node;
 use std::str::FromStr;
 
 pub fn get_text_node<'a>(

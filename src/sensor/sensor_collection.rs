@@ -1,4 +1,4 @@
-use sensor::Sensor;
+use crate::sensor::Sensor;
 use std::cell::RefCell;
 use std::rc::Rc;
 

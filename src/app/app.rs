@@ -1,10 +1,10 @@
-use output::OutputCollection;
-use sensor::SensorCollection;
+use crate::output::OutputCollection;
+use crate::sensor::SensorCollection;
 
 use std::thread;
 use std::time::Duration;
 
-use app::Config;
+use crate::app::Config;
 
 pub struct App {
     sensors: SensorCollection,

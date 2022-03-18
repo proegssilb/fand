@@ -1,9 +1,9 @@
-use parser::{Evaluator, Node};
+use crate::parser::{Evaluator, Node};
 use std::cmp;
 use std::path::{Path, PathBuf};
 
-use fan::Fan;
-use util;
+use crate::fan::Fan;
+use crate::util;
 
 // Hwmon PWM fan
 //

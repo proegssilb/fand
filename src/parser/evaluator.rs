@@ -1,4 +1,4 @@
-use parser::Node;
+use crate::parser::Node;
 use std::collections::HashMap;
 use std::rc::Rc;
 

@@ -4,6 +4,8 @@ use std::io::{self, Write};
 use crate::fan::Fan;
 use crate::util;
 
+use anyhow::Result;
+
 // Fan speed output on console
 //
 // Rather than actually controlling a fan, this
@@ -22,12 +24,13 @@ impl ConsoleFan {
 }
 
 impl Fan for ConsoleFan {
-    fn set_enabled(&mut self, _: bool) -> Result<(), String> {
+    fn set_enabled(&mut self, _: bool) -> Result<()> {
         Ok(())
     }
 
-    fn set(&mut self, v: f64) -> Result<(), String> {
-        util::map_io_error(writeln!(io::stdout(), "{}: {}", &self.name, &v.to_string()))
+    fn set(&mut self, v: f64) -> Result<()> {
+        let _res = writeln!(io::stdout(), "{}: {}", &self.name, &v.to_string())?;
+        Ok(())
     }
 }
 
@@ -43,7 +46,7 @@ impl EvalConsoleFan {
 }
 
 impl Evaluator<Box<dyn Fan>> for EvalConsoleFan {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Fan>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Fan>> {
         Ok(ConsoleFan::create(util::get_text_node(
             "console-fan",
             nodes,

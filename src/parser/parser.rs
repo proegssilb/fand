@@ -1,7 +1,6 @@
-use std::result;
+use anyhow::{anyhow, Result};
 use std::str::Chars;
 
-pub type Result<T> = result::Result<T, String>;
 pub type CharPtr<'a> = (Option<char>, Chars<'a>);
 
 pub struct Parser;
@@ -84,7 +83,7 @@ impl Parser {
         match c {
             Some('"') => Parser::parse_text((s.next(), s)),
             Some('(') => Parser::parse_node((s.next(), s)),
-            _ => Err("Expected \" or (".to_string()),
+            _ => Err(anyhow!("Expected \" or (")),
         }
     }
 
@@ -95,7 +94,7 @@ impl Parser {
         let (c, mut s) = p2;
         match c {
             Some(')') => Ok((Node::Node(name, nodes), (s.next(), s))),
-            _ => Err("Expected ')'".to_string()),
+            _ => Err(anyhow!("Expected ')'")),
         }
     }
 
@@ -107,9 +106,7 @@ impl Parser {
 
         loop {
             match c {
-                None | Some('"') | Some('(') => {
-                    return Err("Expected ')' or whitespace".to_string())
-                }
+                None | Some('"') | Some('(') => return Err(anyhow!("Expected ')' or whitespace")),
                 Some(')') | Some(' ') | Some('\x09') | Some('\x0A') | Some('\x0D') => {
                     return Ok((result, (c, s)))
                 }
@@ -125,9 +122,9 @@ impl Parser {
         let mut result = String::new();
         loop {
             match c {
-                None => return Err("Expected \"".to_string()),
+                None => return Err(anyhow!("Expected \"".to_string())),
                 Some('"') => return Ok((Node::Text(result), (s.next(), s))),
-                Some('\\') => result.push(s.next().ok_or("Expected character".to_string())?),
+                Some('\\') => result.push(s.next().ok_or_else(|| anyhow!("Expected character"))?),
                 Some(c) => result.push(c),
             }
             c = s.next();

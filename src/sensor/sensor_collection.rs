@@ -2,6 +2,8 @@ use crate::sensor::Sensor;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use anyhow::Result;
+
 pub struct SensorCollection {
     sensors: Vec<Rc<RefCell<Box<dyn Sensor>>>>,
 }
@@ -20,7 +22,7 @@ impl SensorCollection {
     }
 
     // Updates all sensors
-    pub fn update_all(&mut self) -> Result<(), String> {
+    pub fn update_all(&mut self) -> Result<()> {
         for s in self.sensors.as_mut_slice() {
             s.borrow_mut().update()?;
         }

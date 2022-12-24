@@ -1,3 +1,9 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
+use anyhow::{Context, Result};
+use thiserror::Error;
+
 use crate::output::OutputCollection;
 use crate::sensor::SensorCollection;
 
@@ -8,12 +14,19 @@ use crate::sensor::evaluator::{NamedSensors, SensorEvaluator};
 
 use crate::parser::{Evaluator, Node};
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
 pub struct Config {
     pub sensors: SensorCollection,
     pub outputs: OutputCollection,
+}
+
+#[derive(Debug, Error)]
+pub enum ConfigError {
+    #[error("Invalid root node type in config: {0}")]
+    InvalidRootNodeType(String),
+    #[error("Expected node instead of text at string: {0}")]
+    MissingNode(String),
+    #[error(transparent)]
+    Other(#[from] anyhow::Error),
 }
 
 impl Config {
@@ -24,7 +37,7 @@ impl Config {
         }
     }
 
-    pub fn parse(nodes: &[Node]) -> Result<Config, String> {
+    pub fn parse(nodes: &[Node]) -> Result<Config> {
         let named_fans = Rc::new(RefCell::new(NamedFans::new()));
         let named_sensors = Rc::new(RefCell::new(NamedSensors::new()));
         let input_evaluator = InputEvaluator::create(named_sensors.clone());
@@ -40,23 +53,31 @@ impl Config {
             match *n {
                 Node::Node(ref s, ref nx) => match s.as_str() {
                     "fan" => {
-                        let (name, fan) = fan_eval.parse_nodes(nx)?;
+                        let (name, fan) = fan_eval
+                            .parse_nodes(nx)
+                            .with_context(|| format!("Error while parsing fan node {}", s))?;
                         named_fans.borrow_mut().insert(name, fan);
                     }
                     "sensor" => {
-                        let (name, sensor) = sensor_eval.parse_nodes(nx)?;
+                        let (name, sensor) = sensor_eval
+                            .parse_nodes(nx)
+                            .with_context(|| format!("Error while parsing sensor node {}", s))?;
                         named_sensors.borrow_mut().insert(name, sensor.clone());
                         sensors.add(sensor);
                     }
                     "output" => {
-                        outputs.add(output_eval.parse_nodes(nx)?);
+                        outputs.add(
+                            output_eval.parse_nodes(nx).with_context(|| {
+                                format!("Error while parsing output node {}", s)
+                            })?,
+                        );
                     }
                     _ => {
-                        return Err(format!("Invalid root node type: {}", s));
+                        return Err(ConfigError::InvalidRootNodeType(s.clone()).into());
                     }
                 },
                 Node::Text(ref s) => {
-                    return Err(format!("Expected node at '{}'", s));
+                    return Err(ConfigError::MissingNode(s.clone()).into());
                 }
             }
         }

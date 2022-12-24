@@ -15,18 +15,20 @@ pub mod util;
 use crate::app::{App, Config};
 use crate::parser::Parser;
 
+use anyhow::{anyhow, Result};
+
 use std::io::Write;
 use std::path::Path;
 
-fn global_config_path() -> Result<String, String> {
+fn global_config_path() -> Result<String> {
     std::env::args()
         .nth(1)
-        .ok_or("No configuration file specified".to_string())
+        .ok_or_else(|| anyhow!("No configuration file specified"))
 }
 
-fn run_app() -> Result<(), String> {
+fn run_app() -> Result<()> {
     env_logger::init();
-    
+
     let config_path = global_config_path()?;
     let content = util::read_text_file(Path::new(&config_path))?;
 

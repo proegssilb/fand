@@ -3,6 +3,7 @@ use crate::input::Input;
 use crate::input::evaluator::InputEvaluatorRef;
 use crate::parser::{Evaluator, Node};
 use crate::util;
+use anyhow::Result;
 
 // Smoother
 pub struct Smooth {
@@ -73,7 +74,7 @@ impl EvalSmooth {
 }
 
 impl Evaluator<Box<dyn Input>> for EvalSmooth {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>> {
         Ok(Smooth::create(
             util::get_num_node::<usize>("smooth", nodes, 0)?,
             self.input

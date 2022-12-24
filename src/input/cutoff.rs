@@ -1,6 +1,7 @@
-use crate::input::Input;
+use anyhow::Result;
 
 use crate::input::evaluator::InputEvaluatorRef;
+use crate::input::Input;
 use crate::parser::{Evaluator, Node};
 use crate::util;
 
@@ -72,7 +73,7 @@ impl EvalCutoff {
 }
 
 impl Evaluator<Box<dyn Input>> for EvalCutoff {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>> {
         Ok(Cutoff::create(
             util::get_num_node::<f64>("cutoff", nodes, 0)?,
             util::get_num_node::<f64>("cutoff", nodes, 1)?,

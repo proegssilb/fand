@@ -1,6 +1,8 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use anyhow::{anyhow, Result};
+
 use crate::fan::evaluator::NamedFans;
 use crate::input::evaluator::InputEvaluator;
 use crate::output::Output;
@@ -26,14 +28,14 @@ impl OutputEvaluator {
 }
 
 impl Evaluator<Output> for OutputEvaluator {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Output, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Output> {
         let fan_name = util::get_text_node("output", nodes, 0)?;
         let input_node = util::get_node("output", nodes, 1)?;
 
         let mut named_fans = self.named_fans.borrow_mut();
         let fan = named_fans
             .remove(fan_name)
-            .ok_or(format!("No such sensor: {}", fan_name))?;
+            .ok_or(anyhow!("No such sensor: {}", fan_name))?;
         Ok(Output::new(
             fan,
             self.input_evaluator.borrow().parse_node(input_node)?,

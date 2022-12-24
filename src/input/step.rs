@@ -1,6 +1,7 @@
-use crate::input::Input;
+use anyhow::{anyhow, Result};
 
 use crate::input::evaluator::InputEvaluatorRef;
+use crate::input::Input;
 use crate::parser::{Evaluator, Node};
 use crate::util;
 
@@ -91,7 +92,7 @@ impl EvalSteps {
 }
 
 impl Evaluator<Box<dyn Input>> for EvalSteps {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>> {
         let mut input: Option<Box<dyn Input>> = None;
         let mut steps: Vec<Step> = Vec::new();
 
@@ -106,15 +107,15 @@ impl Evaluator<Box<dyn Input>> for EvalSteps {
                     } else if input.is_none() {
                         input = Some(self.input.borrow().parse_node(n)?);
                     } else {
-                        return Err(format!("(step): Unexpected node '{}'", s));
+                        return Err(anyhow!("(step): Unexpected node '{}'", s));
                     }
                 }
-                Node::Text(_) => return Err("(step): Unexpected text node".to_string()),
+                Node::Text(_) => return Err(anyhow!("(step): Unexpected text node")),
             }
         }
 
         // Create the actual step object
-        let input_node = input.ok_or("(step): Missing input".to_string())?;
+        let input_node = input.ok_or_else(|| anyhow!("(step): Missing input"))?;
         Ok(Steps::create(steps, input_node))
     }
 }

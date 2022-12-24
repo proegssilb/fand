@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::fan::Fan;
 use crate::input::Input;
 
@@ -14,12 +16,12 @@ impl Output {
         }
     }
 
-    pub fn set_enabled(&mut self, state: bool) -> Result<(), String> {
+    pub fn set_enabled(&mut self, state: bool) -> Result<()> {
         self.fan.set_enabled(state)
     }
 
     // Computes and sets the fan's speed
-    pub fn update(&mut self) -> Result<(), String> {
+    pub fn update(&mut self) -> Result<()> {
         self.fan.set(self.input.compute())
     }
 }

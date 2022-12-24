@@ -1,3 +1,5 @@
+use anyhow::anyhow;
+
 use crate::parser::Node;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -7,7 +9,7 @@ use std::rc::Rc;
 // Processes either one single node or a sequence
 // of nodes and returns an object of a given type.
 pub trait Evaluator<T> {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<T, String>;
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<T, anyhow::Error>;
 }
 
 // Tag-based evaluator
@@ -31,21 +33,21 @@ impl<T> TagEvaluator<T> {
     }
 
     // Forwards a single node to the given evaluator
-    pub fn parse_node(&self, node: &Node) -> Result<T, String> {
+    pub fn parse_node(&self, node: &Node) -> Result<T, anyhow::Error> {
         match *node {
             Node::Node(ref title, ref content) => self
                 .parsers
                 .get(title)
-                .ok_or(format!("Unknown node type: {}", title))?
+                .ok_or(anyhow!("Unknown node type: {}", title))?
                 .parse_nodes(content),
-            _ => Err("Expected node".to_string()),
+            _ => Err(anyhow!("Expected node")),
         }
     }
 }
 
 impl<T> Evaluator<Vec<T>> for TagEvaluator<T> {
     // Parses a sequence of nodes and returns a sequence of elements
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Vec<T>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Vec<T>, anyhow::Error> {
         let mut result: Vec<T> = Vec::new();
         for n in nodes.iter() {
             result.push(self.parse_node(n)?);

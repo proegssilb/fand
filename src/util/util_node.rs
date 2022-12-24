@@ -1,35 +1,30 @@
 use crate::parser::Node;
 
 use std::collections::HashMap;
-use std::str::FromStr;
 use std::fs;
+use std::str::FromStr;
 
-pub fn get_text_node<'a>(
-    tag_name: &str,
-    nodes: &'a [Node],
-    id: usize,
-) -> Result<&'a String, String> {
+use anyhow::{anyhow, Result};
+
+pub fn get_text_node<'a>(tag_name: &str, nodes: &'a [Node], id: usize) -> Result<&'a String> {
     match nodes.get(id) {
         Some(&Node::Text(ref s)) => Ok(s),
-        _ => Err(format!("({}): Missing text argument", tag_name)),
+        _ => Err(anyhow!("({}): Missing text argument", tag_name)),
     }
 }
 
-pub fn get_num_node<'a, T: FromStr>(
-    tag_name: &str,
-    nodes: &'a [Node],
-    id: usize,
-) -> Result<T, String> {
+pub fn get_num_node<'a, T: FromStr>(tag_name: &str, nodes: &'a [Node], id: usize) -> Result<T> {
     get_text_node(tag_name, nodes, id)?
         .parse::<T>()
-        .map_err(|_| "Invalid number".to_string())
+        .map_err(|_| anyhow!("Invalid number"))
 }
 
-pub fn get_node<'a>(tag_name: &str, nodes: &'a [Node], id: usize) -> Result<&'a Node, String> {
+pub fn get_node<'a>(tag_name: &str, nodes: &'a [Node], id: usize) -> Result<&'a Node> {
     nodes
         .get(id)
-        .ok_or(format!("({}): Missing node argument", tag_name))
+        .ok_or(anyhow!("({}): Missing node argument", tag_name))
 }
+
 lazy_static! {
     pub static ref HWMON_NAME_TO_PATH: HashMap<String, String> = {
         let mut hwmon_table = HashMap::new();

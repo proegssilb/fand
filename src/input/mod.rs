@@ -1,4 +1,3 @@
-
 pub mod cutoff;
 pub mod evaluator;
 pub mod input;
@@ -15,4 +14,3 @@ pub use crate::input::panic::Panic;
 pub use crate::input::sensor::SensorInput;
 pub use crate::input::smooth::Smooth;
 pub use crate::input::step::{Step, Steps};
-

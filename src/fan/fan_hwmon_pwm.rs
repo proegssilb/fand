@@ -2,6 +2,8 @@ use crate::parser::{Evaluator, Node};
 use std::cmp;
 use std::path::{Path, PathBuf};
 
+use anyhow::Result;
+
 use crate::fan::Fan;
 use crate::util;
 
@@ -18,7 +20,9 @@ pub struct HwmonPwmFan {
 impl HwmonPwmFan {
     pub fn create(hwmon: &str, output: &str) -> Box<dyn Fan> {
         let base_path_pwm = if util::HWMON_NAME_TO_PATH.contains_key(hwmon) {
-            let hwmon_path = util::HWMON_NAME_TO_PATH.get(hwmon).expect("Hwmon label vanished between `contains_key` check and retrieval.");
+            let hwmon_path = util::HWMON_NAME_TO_PATH
+                .get(hwmon)
+                .expect("Hwmon label vanished between `contains_key` check and retrieval.");
             format!("{}/{}", hwmon_path, output)
         } else {
             warn!("Using old fallback for hwmon-pwm '{}'", hwmon);
@@ -39,7 +43,7 @@ impl HwmonPwmFan {
 }
 
 impl Fan for HwmonPwmFan {
-    fn set_enabled(&mut self, enabled: bool) -> Result<(), String> {
+    fn set_enabled(&mut self, enabled: bool) -> Result<()> {
         if self.path_to_enable.exists() {
             util::write_text_file(
                 &self.path_to_enable,
@@ -53,7 +57,7 @@ impl Fan for HwmonPwmFan {
         }
     }
 
-    fn set(&mut self, v: f64) -> Result<(), String> {
+    fn set(&mut self, v: f64) -> Result<()> {
         let v_i = cmp::max(cmp::min(255, (v * 255.0) as i32), 0);
         util::write_text_file(&self.path_to_pwm, &v_i.to_string())
     }
@@ -71,7 +75,7 @@ impl EvalHwmonPwmFan {
 }
 
 impl Evaluator<Box<dyn Fan>> for EvalHwmonPwmFan {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Fan>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Fan>> {
         Ok(HwmonPwmFan::create(
             util::get_text_node("hwmon-pwm", nodes, 0)?,
             util::get_text_node("hwmon-pwm", nodes, 1)?,

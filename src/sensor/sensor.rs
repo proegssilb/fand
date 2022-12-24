@@ -8,5 +8,5 @@ pub trait Sensor {
     fn value(&self) -> f64;
 
     // Updates sensor value
-    fn update(&mut self) -> Result<(), String>;
+    fn update(&mut self) -> anyhow::Result<()>;
 }

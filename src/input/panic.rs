@@ -1,6 +1,7 @@
-use crate::input::Input;
+use anyhow::Result;
 
 use crate::input::evaluator::InputEvaluatorRef;
+use crate::input::Input;
 use crate::parser::{Evaluator, Node};
 use crate::util;
 
@@ -17,7 +18,11 @@ pub struct Panic {
 }
 
 impl Panic {
-    pub fn create(temp_target_v: f64, temp_critical_v: f64, input_v: Box<dyn Input>) -> Box<dyn Input> {
+    pub fn create(
+        temp_target_v: f64,
+        temp_critical_v: f64,
+        input_v: Box<dyn Input>,
+    ) -> Box<dyn Input> {
         Box::new(Panic {
             input: input_v,
             temp_target: temp_target_v,
@@ -53,7 +58,7 @@ impl EvalPanic {
 }
 
 impl Evaluator<Box<dyn Input>> for EvalPanic {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Box<dyn Input>> {
         Ok(Panic::create(
             util::get_num_node::<f64>("panic", nodes, 0)?,
             util::get_num_node::<f64>("panic", nodes, 1)?,

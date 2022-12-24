@@ -30,7 +30,7 @@ impl FanEvaluator {
 }
 
 impl Evaluator<(String, Box<dyn Fan>)> for FanEvaluator {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<(String, Box<dyn Fan>), String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<(String, Box<dyn Fan>), anyhow::Error> {
         let name = util::get_text_node("fan", nodes, 0)?;
         let node = util::get_node("fan", nodes, 1)?;
         Ok((name.clone(), self.tag_evaluator.parse_node(node)?))

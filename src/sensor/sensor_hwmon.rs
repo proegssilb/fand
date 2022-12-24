@@ -3,6 +3,8 @@ use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
+use anyhow::Result;
+
 use crate::sensor::Sensor;
 use crate::util;
 
@@ -20,7 +22,9 @@ pub struct HwmonSensor {
 impl HwmonSensor {
     pub fn create(hwmon: &str, input: &str) -> Rc<RefCell<Box<dyn Sensor>>> {
         let base_path = if util::HWMON_NAME_TO_PATH.contains_key(hwmon) {
-            let hwmon_path = util::HWMON_NAME_TO_PATH.get(hwmon).expect("Hwmon label vanished between `contains_key` check and retrieval.");
+            let hwmon_path = util::HWMON_NAME_TO_PATH
+                .get(hwmon)
+                .expect("Hwmon label vanished between `contains_key` check and retrieval.");
             format!("{}/{}", hwmon_path, input)
         } else {
             warn!("Using old fallback for hwmon-input '{}'", hwmon);
@@ -49,16 +53,14 @@ impl Sensor for HwmonSensor {
         self.value.unwrap()
     }
 
-    fn update(&mut self) -> Result<(), String> {
+    fn update(&mut self) -> Result<()> {
         let raw_str = util::read_text_file(&self.path)?;
         let val_str = raw_str
             .chars()
             .filter(|c| self.pass_char(*c))
             .collect::<String>();
 
-        let raw_value = val_str
-            .parse::<f64>()
-            .map_err(|_| "Invalid number".to_string())?;
+        let raw_value = val_str.parse::<f64>()?;
         self.value = Some(raw_value / 1000.0);
         Ok(())
     }
@@ -76,7 +78,7 @@ impl EvalHwmonSensor {
 }
 
 impl Evaluator<Rc<RefCell<Box<dyn Sensor>>>> for EvalHwmonSensor {
-    fn parse_nodes(&self, nodes: &[Node]) -> Result<Rc<RefCell<Box<dyn Sensor>>>, String> {
+    fn parse_nodes(&self, nodes: &[Node]) -> Result<Rc<RefCell<Box<dyn Sensor>>>> {
         Ok(HwmonSensor::create(
             util::get_text_node("hwmon-sensor", nodes, 0)?,
             util::get_text_node("hwmon-sensor", nodes, 1)?,

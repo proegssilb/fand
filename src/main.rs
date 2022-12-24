@@ -41,7 +41,7 @@ fn main() {
     match run_app() {
         Ok(_) => std::process::exit(0),
         Err(e) => {
-            writeln!(&mut std::io::stderr(), "{}", &e).unwrap();
+            writeln!(&mut std::io::stderr(), "{:?}", &e).unwrap();
             std::process::exit(1);
         }
     }

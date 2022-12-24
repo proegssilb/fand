@@ -2,7 +2,7 @@ use crate::parser::{Evaluator, Node};
 use std::cmp;
 use std::path::{Path, PathBuf};
 
-use anyhow::Result;
+use anyhow::{Result, Context};
 
 use crate::fan::Fan;
 use crate::util;
@@ -53,13 +53,14 @@ impl Fan for HwmonPwmFan {
                 },
             )
         } else {
+            warn!("Tried to enable/disable fan that can't be enabled/disabled: {}", self.path_to_enable.to_string_lossy());
             Result::Ok(())
         }
     }
 
     fn set(&mut self, v: f64) -> Result<()> {
         let v_i = cmp::max(cmp::min(255, (v * 255.0) as i32), 0);
-        util::write_text_file(&self.path_to_pwm, &v_i.to_string())
+        util::write_text_file(&self.path_to_pwm, &v_i.to_string()).with_context(|| format!("Failed to write file: {}", self.path_to_pwm.to_string_lossy()))
     }
 }
 
